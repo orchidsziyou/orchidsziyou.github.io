@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奶龙加密</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: grid;
+            grid-template-columns: 1fr; /* 单列布局 */
+            gap: 10px; /* 组件之间的间距 */
+            justify-items: center; /* 水平居中 */
+            padding: 20px;
+        }
+        pre {
+            background-color: #eaeaea;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        #inputString,#output {
+            height: 200px;
+            width: 400px;
+            resize: none;
+        }
+        #buttonContainer {
+            display: flex; /* 使用 Flexbox */
+            gap: 10px; /* 按钮之间的间距 */
+        }
+
+        #encyBtn, #decyBtn {
+            height: 30px;
+            width: 70px;
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+<h1>奶龙加密器</h1>
+
+<h1>加密</h1>
+<textarea id="inputString"></textarea>
+
+<div id="buttonContainer">
+    <button onclick="encrypt()" id="encyBtn">加密</button>
+    <button onclick="decrypt()" id="decyBtn">解密</button>
+</div>
+
+
+<h2>解密</h2>
+<textarea id="output" ></textarea>
+
+<script>
+    function encrypt() {
+        const inputString = document.getElementById("inputString").value;
+        if (inputString.trim() === "") {
+            return; // 如果输入字符串为空，退出函数
+        }
+        const output = convertToUnicode(inputString);
+        document.getElementById("output").textContent = output;
+    }
+
+    function convertToUnicode(str) {
+        let unicodeBuilder = '';
+        for (let ch of str) {
+            const tmp = ('000' + ch.charCodeAt(0).toString(16)).slice(-4);
+            for (let i = 0; i < tmp.length; i++) {
+                unicodeBuilder += numberToEncode(convertToNumber(tmp[i]));
+            }
+        }
+        return unicodeBuilder;
+    }
+
+    function convertToNumber(c) {
+        if (c >= '0' && c <= '9') {
+            return c.charCodeAt(0) - '0'.charCodeAt(0);
+        } else {
+            return c.charCodeAt(0) - 'a'.charCodeAt(0) + 10;
+        }
+    }
+
+    function numberToEncode(i) {
+        let binaryString = i.toString(2);
+        const str = binaryString.padStart(4, '0');
+
+        const firstTwo = str.substring(0, 2);
+        const thirdFourth = str.substring(2, 4);
+        return numberToNailong(firstTwo) + numberToNailong(thirdFourth);
+    }
+
+    function numberToNailong(str) {
+        if (str === "00") {
+            return "奶奶";
+        } else if (str === "01") {
+            return "奶龙";
+        } else if (str === "10") {
+            return "龙奶";
+        } else {
+            return "龙龙";
+        }
+    }
+    //解密部分
+    function decrypt() {
+        const inputString = document.getElementById("output").value;
+        if (inputString.trim() === "") {
+            return; // 如果输入字符串为空，退出函数
+        }
+        const outputstr = NumberToUNICODE(NailongToNumber(inputString));
+        document.getElementById("inputString").value = outputstr;
+    }
+
+    function NailongToNumber(str) {
+        let stringBuilder = '';
+        for (let i = 0; i < str.length; i += 2) {
+            const tmp = str.substring(i, i + 2);
+            if (tmp === "奶奶") {
+                stringBuilder += "00";
+            } else if (tmp === "奶龙") {
+                stringBuilder += "01";
+            } else if (tmp === "龙奶") {
+                stringBuilder += "10";
+            } else {
+                stringBuilder += "11";
+            }
+        }
+        return stringBuilder;
+    }
+
+    function NumberToUNICODE(str) {
+        let stringBuilder = '';
+        let result = '';
+        for (let i = 0; i < str.length; i += 4) {
+            const tmp = str.substring(i, i + 4);
+            stringBuilder += DecToHex(tmp);
+        }
+        for (let i = 0; i < stringBuilder.length; i += 4) {
+            const hex = stringBuilder.substring(i, i + 4);
+            const codePoint = parseInt(hex, 16);
+            result += String.fromCharCode(codePoint);
+        }
+        return result;
+    }
+
+    function DecToHex(str) {
+        let sum = 0;
+        for (let i = 3; i >= 0; i--) {
+            if (str.charAt(i) === '1') {
+                sum += Math.pow(2, 3 - i);
+            }
+        }
+        return DecToHexhelp(sum);
+    }
+
+    function DecToHexhelp(i) {
+        if (i < 10) {
+            return i.toString();
+        } else {
+            const hexChar = String.fromCharCode('a'.charCodeAt(0) + (i - 10));
+            return hexChar;
+        }
+    }
+
+
+
+
+</script>
+
+</body>
+</html>
